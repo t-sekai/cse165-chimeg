@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.Interactions;
 
+[RequireComponent(typeof(LineRenderer))]
 public class Controls : MonoBehaviour
 {
+    [Header("Selection")]
+
     [SerializeField]
     private InputActionReference selectAction;
 
@@ -19,12 +21,35 @@ public class Controls : MonoBehaviour
     [SerializeField]
     private LayerMask selectableLayers;
 
+    [Header("Teleportation")]
+
+    [SerializeField]
+    private InputActionReference aimPositionAction;
+
+    [SerializeField]
+    private InputActionReference aimRotationAction;
+
+    [SerializeField]
+    private InputActionReference headPositionAction;
+
+    [SerializeField]
+    private GameObject cameraOffset;
+
+    [SerializeField]
+    private LayerMask teleportableLayers;
+
     private GameObject hoveredObject = null;
     private GameObject selectedObject = null;
 
     private Quaternion initialObjectRotation;
     private Quaternion initialSelectRotation;
     private Vector3 initialSelectLocalPosition;
+
+    private LineRenderer lineRenderer;
+    private Vector3? teleportPosition;
+
+    private bool isPointing = false;
+    public void OnPoint(bool b) => isPointing = b;
 
     void Start()
     {
@@ -33,18 +58,30 @@ public class Controls : MonoBehaviour
 
         selectAction.action.Enable();
         selectPositionAction.action.Enable();
+
+        lineRenderer = GetComponent<LineRenderer>();
     }
 
     private void onSelect(InputAction.CallbackContext context)
     {
-        selectedObject = hoveredObject;
-        if (selectedObject != null)
+        if (!isPointing)
         {
-            var rb = selectedObject.GetComponent<Rigidbody>();
-            rb.GetComponent<Rigidbody>().useGravity = false;
-            initialObjectRotation = rb.transform.rotation;
-            initialSelectRotation = selectRotationAction.action.ReadValue<Quaternion>();
-            initialSelectLocalPosition = rb.transform.InverseTransformPoint(selectPositionAction.action.ReadValue<Vector3>());
+            selectedObject = hoveredObject;
+            if (selectedObject != null)
+            {
+                var rb = selectedObject.GetComponent<Rigidbody>();
+                rb.GetComponent<Rigidbody>().useGravity = false;
+                initialObjectRotation = rb.transform.rotation;
+                initialSelectRotation = selectRotationAction.action.ReadValue<Quaternion>();
+                var position = selectPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
+                initialSelectLocalPosition = rb.transform.InverseTransformPoint(position);
+            }
+        }
+        else if (teleportPosition.HasValue)
+        {
+            var position = teleportPosition.Value - headPositionAction.action.ReadValue<Vector3>();
+            position.y = cameraOffset.transform.position.y;
+            cameraOffset.transform.position = position;
         }
     }
 
@@ -58,7 +95,7 @@ public class Controls : MonoBehaviour
 
     void Update()
     {
-        var position = selectPositionAction.action.ReadValue<Vector3>();
+        var position = selectPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
         var overlapped = Physics.OverlapSphere(position, 0.01f, selectableLayers);
 
         if (hoveredObject?.GetComponent<Outline>() is Outline outline0)
@@ -69,6 +106,31 @@ public class Controls : MonoBehaviour
 
         if (hoveredObject?.GetComponent<Outline>() is Outline outline1)
             outline1.OutlineColor = outline1.OutlineColor.WithAlpha(1f);
+
+        if (isPointing)
+        {
+            var origin = aimPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
+            var rotation = aimRotationAction.action.ReadValue<Quaternion>();
+            var dir = rotation * Vector3.forward;
+
+            lineRenderer.positionCount = 2;
+            Physics.Raycast(origin, dir, out var hit, float.PositiveInfinity, teleportableLayers);
+            if (hit.transform != null)
+            {
+                teleportPosition = origin + hit.distance * dir;
+                lineRenderer.SetPositions(new[] { origin, teleportPosition.Value });
+            }
+            else
+            {
+                teleportPosition = null;
+                var end = origin + 100f * dir;
+                lineRenderer.SetPositions(new[] { origin, end });
+            }
+        }
+        else
+        {
+            lineRenderer.positionCount = 0;
+        }
     }
 
     private void FixedUpdate()
@@ -76,8 +138,8 @@ public class Controls : MonoBehaviour
         if (selectedObject != null)
         {
             var rb = selectedObject.GetComponent<Rigidbody>();
-            
-            var position = selectPositionAction.action.ReadValue<Vector3>();
+
+            var position = selectPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
             var translate = position - rb.transform.TransformPoint(initialSelectLocalPosition);
             rb.velocity = 15f * translate;
 
