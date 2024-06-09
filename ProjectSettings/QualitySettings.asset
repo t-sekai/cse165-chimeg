@@ -271,8 +271,8 @@ QualitySettings:
     softParticles: 1
     softVegetation: 1
     realtimeReflectionProbes: 1
-    billboardsFaceCameraPosition: 1
-    useLegacyDetailDistribution: 1
+    billboardsFaceCameraPosition: 0
+    useLegacyDetailDistribution: 0
     vSyncCount: 1
     realtimeGICPUUsage: 100
     lodBias: 2
@@ -290,13 +290,13 @@ QualitySettings:
     asyncUploadPersistentBuffer: 1
     resolutionScalingFixedDPIFactor: 1
     customRenderPipeline: {fileID: 0}
-    terrainQualityOverrides: 0
+    terrainQualityOverrides: 32
     terrainPixelError: 1
     terrainDetailDensityScale: 1
     terrainBasemapDistance: 1000
     terrainDetailDistance: 80
     terrainTreeDistance: 5000
-    terrainBillboardStart: 50
+    terrainBillboardStart: 2000
     terrainFadeLength: 5
     terrainMaxTrees: 50
     excludedTargetPlatforms: []
@@ -310,6 +310,7 @@ QualitySettings:
     Nintendo Switch: 5
     PS4: 5
     PS5: 5
+    Server: 0
     Stadia: 5
     Standalone: 5
     WebGL: 3

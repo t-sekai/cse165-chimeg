@@ -80,7 +80,7 @@ public class Controls : MonoBehaviour
         else if (teleportPosition.HasValue)
         {
             var position = teleportPosition.Value - headPositionAction.action.ReadValue<Vector3>();
-            position.y = cameraOffset.transform.position.y;
+            position.y = teleportPosition.Value.y;
             cameraOffset.transform.position = position;
         }
     }
