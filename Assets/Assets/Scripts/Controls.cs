@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
-[RequireComponent(typeof(LineRenderer))]
 public class Controls : MonoBehaviour
 {
     [Header("Selection")]
@@ -24,12 +24,6 @@ public class Controls : MonoBehaviour
     [Header("Teleportation")]
 
     [SerializeField]
-    private InputActionReference aimPositionAction;
-
-    [SerializeField]
-    private InputActionReference aimRotationAction;
-
-    [SerializeField]
     private InputActionReference headPositionAction;
 
     [SerializeField]
@@ -38,6 +32,9 @@ public class Controls : MonoBehaviour
     [SerializeField]
     private LayerMask teleportableLayers;
 
+    [SerializeField]
+    private XRRayInteractor rayInteractor;
+
     private GameObject hoveredObject = null;
     private GameObject selectedObject = null;
 
@@ -45,7 +42,6 @@ public class Controls : MonoBehaviour
     private Quaternion initialSelectRotation;
     private Vector3 initialSelectLocalPosition;
 
-    private LineRenderer lineRenderer;
     private Vector3? teleportPosition;
 
     private bool isPointing = false;
@@ -58,8 +54,6 @@ public class Controls : MonoBehaviour
 
         selectAction.action.Enable();
         selectPositionAction.action.Enable();
-
-        lineRenderer = GetComponent<LineRenderer>();
     }
 
     private void onSelect(InputAction.CallbackContext context)
@@ -109,27 +103,16 @@ public class Controls : MonoBehaviour
 
         if (isPointing)
         {
-            var origin = aimPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
-            var rotation = aimRotationAction.action.ReadValue<Quaternion>();
-            var dir = rotation * Vector3.forward;
+            rayInteractor.GetLineOriginAndDirection(out var origin, out var dir);
 
-            lineRenderer.positionCount = 2;
+            rayInteractor.enabled = true;
+
             Physics.Raycast(origin, dir, out var hit, float.PositiveInfinity, teleportableLayers);
-            if (hit.transform != null)
-            {
-                teleportPosition = origin + hit.distance * dir;
-                lineRenderer.SetPositions(new[] { origin, teleportPosition.Value });
-            }
-            else
-            {
-                teleportPosition = null;
-                var end = origin + 100f * dir;
-                lineRenderer.SetPositions(new[] { origin, end });
-            }
+            teleportPosition = hit.transform != null ? origin + hit.distance * dir : null;
         }
         else
         {
-            lineRenderer.positionCount = 0;
+            rayInteractor.enabled = false;
         }
     }
 
