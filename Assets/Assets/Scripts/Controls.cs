@@ -44,6 +44,8 @@ public class Controls : MonoBehaviour
 
     private Vector3? teleportPosition;
 
+    private bool isHoveringUI = false;
+
     private bool isPointing = false;
     public void OnPoint(bool b) => isPointing = b;
 
@@ -54,6 +56,9 @@ public class Controls : MonoBehaviour
 
         selectAction.action.Enable();
         selectPositionAction.action.Enable();
+
+        rayInteractor.uiHoverEntered.AddListener(_ => isHoveringUI = true);
+        rayInteractor.uiHoverExited.AddListener(_ => isHoveringUI = false);
     }
 
     private void onSelect(InputAction.CallbackContext context)
@@ -71,7 +76,7 @@ public class Controls : MonoBehaviour
                 initialSelectLocalPosition = rb.transform.InverseTransformPoint(position);
             }
         }
-        else if (teleportPosition.HasValue)
+        else if (teleportPosition.HasValue && !isHoveringUI)
         {
             var position = teleportPosition.Value - headPositionAction.action.ReadValue<Vector3>();
             position.y = teleportPosition.Value.y;
