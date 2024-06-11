@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -36,7 +37,7 @@ public class Controls : MonoBehaviour
     private XRRayInteractor rayInteractor;
 
     private GameObject hoveredObject = null;
-    private GameObject selectedObject = null;
+    public GameObject selectedObject = null;
 
     private Quaternion initialObjectRotation;
     private Quaternion initialSelectRotation;
@@ -70,6 +71,7 @@ public class Controls : MonoBehaviour
             {
                 var rb = selectedObject.GetComponent<Rigidbody>();
                 rb.GetComponent<Rigidbody>().useGravity = false;
+                rb.GetComponent<Rigidbody>().isKinematic = false;
                 initialObjectRotation = rb.transform.rotation;
                 initialSelectRotation = selectRotationAction.action.ReadValue<Quaternion>();
                 var position = selectPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
@@ -95,13 +97,25 @@ public class Controls : MonoBehaviour
     void Update()
     {
         var position = selectPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
-        var overlapped = Physics.OverlapSphere(position, 0.01f, selectableLayers);
+        var overlapped = Physics.OverlapSphere(position, 0.05f, selectableLayers);
 
         if (hoveredObject?.GetComponent<Outline>() is Outline outline0)
             outline0.OutlineColor = outline0.OutlineColor.WithAlpha(0f);
 
         if (selectedObject == null)
-            hoveredObject = overlapped.Length > 0 ? overlapped[0].gameObject : null;
+        {
+            hoveredObject = null;
+            float minDistance = float.PositiveInfinity;
+            foreach (var c in overlapped)
+            {
+                float distance = (c.ClosestPoint(position) - position).magnitude;
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    hoveredObject = c.gameObject;
+                }
+            }
+        }
 
         if (hoveredObject?.GetComponent<Outline>() is Outline outline1)
             outline1.OutlineColor = outline1.OutlineColor.WithAlpha(1f);
