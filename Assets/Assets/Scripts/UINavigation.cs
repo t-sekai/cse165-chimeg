@@ -15,6 +15,7 @@ public class UINavigation : MonoBehaviour
     [SerializeField] private GameObject stepPage;
     [SerializeField] private GameObject result1;
     [SerializeField] private GameObject result2;
+    [SerializeField] private GameObject goHome;
 
     [SerializeField] private GameObject currentPage;
     [SerializeField] private GameObject previousPage;
@@ -40,8 +41,41 @@ public class UINavigation : MonoBehaviour
     }
     public void home()
     {
-        stepPage.SetActive(false);
-        signIn();
+        if (currentPage != titlePage && currentPage != signInPage && currentPage != homePage)
+        {
+            currentPage.SetActive(false);
+            signIn();
+        }
+        else
+        {
+            currentPage.SetActive(false);
+            info.SetActive(true);
+            titlePage.SetActive(true);
+            currentPage = titlePage;
+            previousPage = titlePage;
+            nextPage = signInPage;
+        }
+    }
+
+    public void toggle()
+    {
+        if (currentPage.activeSelf)
+        {
+            goHome.SetActive(false);
+            info.SetActive(false);
+            currentPage.SetActive(false);
+        }
+        else
+        {
+            if (currentPage != stepPage && currentPage != result1 && currentPage != result2 && currentPage != symptomsInput
+                && currentPage != symptomsFound) {
+                info.SetActive(true);
+            }
+            goHome.SetActive(true);
+            currentPage.SetActive(true);
+
+        }
+            
     }
 
     public void titleStart()

@@ -31,7 +31,7 @@ public class ActivateVoice : MonoBehaviour
 
     public void WitActivate()
     {
-        //wit.Activate();
-        wit.Activate("hey man");
+        wit.ActivateImmediately();
+        //wit.Activate("hey man");
         Debug.Log("Activated wit...");    }
 }
