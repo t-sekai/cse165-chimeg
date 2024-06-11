@@ -31,6 +31,9 @@ public class Controls : MonoBehaviour
     private GameObject cameraOffset;
 
     [SerializeField]
+    private GameObject teleportIndicatorPrefab;
+
+    [SerializeField]
     private LayerMask teleportableLayers;
 
     [SerializeField]
@@ -44,6 +47,7 @@ public class Controls : MonoBehaviour
     private Vector3 initialSelectLocalPosition;
 
     private Vector3? teleportPosition;
+    private GameObject teleportIndicator;
 
     private bool isHoveringUI = false;
 
@@ -58,8 +62,17 @@ public class Controls : MonoBehaviour
         selectAction.action.Enable();
         selectPositionAction.action.Enable();
 
-        rayInteractor.uiHoverEntered.AddListener(_ => isHoveringUI = true);
-        rayInteractor.uiHoverExited.AddListener(_ => isHoveringUI = false);
+        rayInteractor.uiHoverEntered.AddListener(_ => {
+            isHoveringUI = true;
+            rayInteractor.gameObject.layer = LayerMask.NameToLayer("UI");
+        });
+        rayInteractor.uiHoverExited.AddListener(_ => {
+            isHoveringUI = false;
+            rayInteractor.gameObject.layer = LayerMask.NameToLayer("Default");
+        });
+
+        teleportIndicator = Instantiate(teleportIndicatorPrefab);
+        teleportIndicator.SetActive(false);
     }
 
     private void onSelect(InputAction.CallbackContext context)
@@ -78,7 +91,7 @@ public class Controls : MonoBehaviour
                 initialSelectLocalPosition = rb.transform.InverseTransformPoint(position);
             }
         }
-        else if (teleportPosition.HasValue && !isHoveringUI)
+        else if (teleportPosition.HasValue)
         {
             var position = teleportPosition.Value - headPositionAction.action.ReadValue<Vector3>();
             position.y = teleportPosition.Value.y;
@@ -97,7 +110,7 @@ public class Controls : MonoBehaviour
     void Update()
     {
         var position = selectPositionAction.action.ReadValue<Vector3>() + cameraOffset.transform.position;
-        var overlapped = Physics.OverlapSphere(position, 0.05f, selectableLayers);
+        var overlapped = Physics.OverlapSphere(position, 0.1f, selectableLayers);
 
         if (hoveredObject?.GetComponent<Outline>() is Outline outline0)
             outline0.OutlineColor = outline0.OutlineColor.WithAlpha(0f);
@@ -122,16 +135,27 @@ public class Controls : MonoBehaviour
 
         if (isPointing)
         {
-            rayInteractor.GetLineOriginAndDirection(out var origin, out var dir);
-
             rayInteractor.enabled = true;
-
+            rayInteractor.GetLineOriginAndDirection(out var origin, out var dir);
             Physics.Raycast(origin, dir, out var hit, float.PositiveInfinity, teleportableLayers);
-            teleportPosition = hit.transform != null ? origin + hit.distance * dir : null;
+
+            if (!isHoveringUI && hit.transform != null)
+            {
+                teleportPosition = origin + hit.distance * dir;
+                teleportIndicator.SetActive(true);
+                teleportIndicator.transform.position = teleportPosition.Value;
+                teleportIndicator.transform.rotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
+            }
+            else
+            {
+                teleportPosition = null;
+                teleportIndicator.SetActive(false);
+            }
         }
         else
         {
             rayInteractor.enabled = false;
+            teleportIndicator.SetActive(false);
         }
     }
 
