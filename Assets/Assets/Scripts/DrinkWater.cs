@@ -5,6 +5,7 @@ using UnityEngine;
 public class DrinkWater : MonoBehaviour
 {
     public bool addedTablet;
+    [SerializeField] private GameObject water;
 
     // Start is called before the first frame update
     void Start()
@@ -31,7 +32,7 @@ public class DrinkWater : MonoBehaviour
     {
         if (other.tag == "MouthArea" && addedTablet)
         {
-            this.transform.GetChild(0).gameObject.SetActive(false);
+            water.SetActive(false);
         }
     }
 }

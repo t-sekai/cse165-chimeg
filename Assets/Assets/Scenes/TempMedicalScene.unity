@@ -2751,7 +2751,7 @@ Transform:
   m_GameObject: {fileID: 311297121}
   serializedVersion: 2
   m_LocalRotation: {x: 0.05642959, y: 0.9900067, z: -0.12922692, w: -0.0017309561}
-  m_LocalPosition: {x: 0.4659, y: 0.871, z: -0.1964}
+  m_LocalPosition: {x: 0.458, y: 0.855, z: -0.585}
   m_LocalScale: {x: 0.049999997, y: 0.049999997, z: 0.049999997}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -9864,6 +9864,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   addedTablet: 0
+  water: {fileID: 1590757539}
 --- !u!1 &1316575996 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1763083057450430388, guid: 1d5e731b448963d498087068c1c5267f, type: 3}
@@ -11973,6 +11974,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1589831069}
   m_CullTransparentMesh: 1
+--- !u!1 &1590757539 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 356751174139056904, guid: 169914415d1019940ab65cb7fc101e01, type: 3}
+  m_PrefabInstance: {fileID: 1273059860}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1597583957
 GameObject:
   m_ObjectHideFlags: 0
