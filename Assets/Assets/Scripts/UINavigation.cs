@@ -94,7 +94,7 @@ public class UINavigation : MonoBehaviour
         signInPage.SetActive(false);
         homePage.SetActive(true);
         previousPage = currentPage;
-        currentPage = nextPage;
+        currentPage = homePage;
         nextPage = tuyaInterface;
     }
 
@@ -104,7 +104,7 @@ public class UINavigation : MonoBehaviour
         homePage.SetActive(false);
         tuyaInterface.SetActive(true);
         previousPage = currentPage;
-        currentPage = nextPage;
+        currentPage = tuyaInterface;
         nextPage = symptomsInput;
     }
 
