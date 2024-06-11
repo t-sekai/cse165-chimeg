@@ -6,6 +6,10 @@ public class NeedleAttach : MonoBehaviour
 {
     // Start is called before the first frame update
     public bool touchedFinger = false;
+    public GameObject blood;
+    public GameObject droplet;
+    [SerializeField] private GameObject purpleHighlight;
+
     void Start()
     {
         touchedFinger = false;
@@ -22,6 +26,8 @@ public class NeedleAttach : MonoBehaviour
         if (other.tag == "BloodTestArea")
         {
             touchedFinger = true;
+            droplet = Instantiate(blood, purpleHighlight.transform.position, Quaternion.identity);
+            purpleHighlight.GetComponent<MeshRenderer>().enabled = false;
         }
     }
 

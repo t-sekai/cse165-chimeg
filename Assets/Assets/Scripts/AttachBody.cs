@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PumpBlueAttach : MonoBehaviour
+public class AttachBody : MonoBehaviour
 {
-    // Start is called before the first frame update
     [SerializeField] Controls rightControl;
     [SerializeField] Controls leftControl;
     private bool inArea = false;
-    [SerializeField] private GameObject blueHighlight;
+
+    // Start is called before the first frame update
     void Start()
     {
-        inArea = false;
+        
     }
 
     // Update is called once per frame
@@ -20,21 +20,19 @@ public class PumpBlueAttach : MonoBehaviour
         if (inArea && rightControl.selectedObject != this.gameObject && leftControl.selectedObject != this.gameObject)
         {
             this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
-            blueHighlight.SetActive(false);
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision other)
     {
-        if (other.tag == "PumpBlueArea")
+        if (other.gameObject.tag == "Player")
         {
             inArea = true;
         }
     }
-
-    private void OnTriggerExit(Collider other)
+    private void OnCollisionExit(Collision other)
     {
-        if (other.tag == "PumpBlueArea")
+        if (other.gameObject.tag == "Player")
         {
             inArea = false;
         }

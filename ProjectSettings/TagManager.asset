@@ -8,6 +8,8 @@ TagManager:
   - PumpBlueArea
   - PumpGreenArea
   - BloodTestArea
+  - MouthArea
+  - Tablet
   layers:
   - Default
   - TransparentFX

@@ -8,6 +8,7 @@ public class AttachScript : MonoBehaviour
     [SerializeField] Controls rightControl;
     [SerializeField] Controls leftControl;
     private bool inArea = false;
+    [SerializeField] private GameObject redHighlight;
     void Start()
     {
         inArea = false;
@@ -19,6 +20,7 @@ public class AttachScript : MonoBehaviour
         if (inArea && rightControl.selectedObject != this.gameObject && leftControl.selectedObject != this.gameObject)
         {
             this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            redHighlight.SetActive(false);
         }
     }
 

@@ -6,6 +6,10 @@ public class BloodTestAttach : MonoBehaviour
 {
     // Start is called before the first frame update
     [SerializeField] NeedleAttach needleAttach;
+    [SerializeField] private GameObject stepPage;
+    [SerializeField] private GameObject result1;
+    [SerializeField] private UIStep step;
+
     bool touchedFinger = false;
     void Start()
     {
@@ -23,14 +27,16 @@ public class BloodTestAttach : MonoBehaviour
         if (other.tag == "BloodTestArea" && needleAttach.touchedFinger)
         {
             touchedFinger = true;
+            Destroy(needleAttach.droplet);
+            StartCoroutine(wait());
         }
     }
 
-    /*private void OnTriggerExit(Collider other)
+    IEnumerator wait()
     {
-        if (other.tag == "BloodTestArea")
-        {
-            
-        }
-    }*/
+        yield return new WaitForSeconds(3);
+        step.incrementStep();
+        stepPage.SetActive(false);
+        result1.SetActive(true);
+    }
 }

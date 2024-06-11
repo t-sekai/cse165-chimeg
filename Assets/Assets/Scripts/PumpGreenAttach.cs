@@ -8,6 +8,7 @@ public class PumpGreenAttach : MonoBehaviour
     [SerializeField] Controls rightControl;
     [SerializeField] Controls leftControl;
     private bool inArea = false;
+    [SerializeField] private GameObject greenHighlight;
     void Start()
     {
         inArea = false;
@@ -19,6 +20,7 @@ public class PumpGreenAttach : MonoBehaviour
         if (inArea && rightControl.selectedObject != this.gameObject && leftControl.selectedObject != this.gameObject)
         {
             this.gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            greenHighlight.SetActive(false);
         }
     }
 
