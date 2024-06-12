@@ -33,6 +33,8 @@ public class UIStep : MonoBehaviour
     [SerializeField] private GameObject ip2;
     [SerializeField] private GameObject ip3;
 
+    [SerializeField] private UINavigation UINav;
+
     public int stepNumber;
 
     // Start is called before the first frame update
@@ -174,6 +176,22 @@ public class UIStep : MonoBehaviour
                 result2.SetActive(true);
                 resultTime.text = System.DateTime.Now.ToString();
                 break;
+        }
+    }
+
+    public void gestureNext(bool recognized)
+    {
+        if (recognized && UINav.currentPage == UINav.stepPage)
+        {
+            incrementStep();
+        }
+    }
+
+    public void gesturePrev(bool recognized)
+    {
+        if (recognized && UINav.currentPage == UINav.stepPage)
+        {
+            decrementStep();
         }
     }
 

@@ -12,12 +12,12 @@ public class UINavigation : MonoBehaviour
     [SerializeField] private GameObject tuyaInterface;
     [SerializeField] private GameObject symptomsInput;
     [SerializeField] private GameObject symptomsFound;
-    [SerializeField] private GameObject stepPage;
+    [SerializeField] public GameObject stepPage;
     [SerializeField] private GameObject result1;
     [SerializeField] private GameObject result2;
     [SerializeField] private GameObject goHome;
 
-    [SerializeField] private GameObject currentPage;
+    [SerializeField] public GameObject currentPage;
     [SerializeField] private GameObject previousPage;
     [SerializeField] private GameObject nextPage;
 
